@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Simple Chat</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f4f4;
+        }
+
+        #chat {
+            max-width: 500px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        #messages {
+            list-style: none;
+            padding: 0;
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+        }
+
+        #messages li {
+            padding: 5px 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        input {
+            width: 80%;
+            padding: 10px;
+        }
+
+        button {
+            width: 18%;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="chat">
+        <h2>Chat App</h2>
+        <ul id="messages"></ul>
+        <input id="input" autocomplete="off" placeholder="Type message..." />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        const input = document.getElementById("input");
+        const messages = document.getElementById("messages");
+
+        function sendMessage() {
+            if (input.value.trim() !== "") {
+                socket.emit("chat message", input.value);
+                input.value = "";
+            }
+        }
+
+        socket.on("chat message", function (msg) {
+            const li = document.createElement("li");
+            li.textContent = msg;
+            messages.appendChild(li);
+            messages.scrollTop = messages.scrollHeight;
+        });
+
+        input.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+                sendMessage();
+            }
+        });
+    </script>
+
+</body>
+
+</html>
